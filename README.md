@@ -1,7 +1,7 @@
 Internet Personal Assistant
 ===========================
 
-Browser based personal assitant experiment using voice interaction and Natural Languange Processing (NLP).
+Browser based personal assistant experiment using voice interaction and Natural Language Processing (NLP).
 
 Commands
 --------
