@@ -1,7 +1,9 @@
 Internet Personal Assistant
 ===========================
 
-Browser based personal assitant experiment using voice interaction and Natural Languange Processing (NLP).
+Browser based personal assistant experiment using voice interaction and Natural Language Processing.
+
+Test it [here](https://ipa.glitch.me/).
 
 Commands
 --------

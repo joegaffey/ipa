@@ -1,18 +1,26 @@
+<!DOCTYPE html>
 <html>
 <head>
-<script src="//cdnjs.cloudflare.com/ajax/libs/annyang/2.6.0/annyang.min.js"></script>    
+<title>Internet Personal Assistant</title>
+<meta name="description" content="IPA is a bowser based personal assistant experiment using voice interaction and Natural Language Processing (NLP)." />
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/annyang/2.6.0/annyang.min.js"></script>     -->
+<script src="/annyang.min.js"></script>    
 <script src="https://unpkg.com/compromise"></script>
 </head>
 <body>
-<h1>Internet Personal Assistant (IPA)</h1>
-<p>IPA is a bowser based personal assitant experiment using voice interaction and Natural Languange Processing (NLP).</p>
+<h1>Internet Personal Assistant</h1>
+<p>IPA is a bowser based personal assistant experiment using voice interaction and Natural Language Processing.</p>
 <h2>Commands</h2>
 <h4>Time difference</h4>
 <p>
 Ask how many seconds, minutes, hours, days or weeks between two dates.<br/>
 Format  "How many {unit} between {date one} and {date two}?"
 </p>
+<h2>Console:</h2>
 <script>
+'use strict';
+
 var synth = window.speechSynthesis;
   
 function uLog(text) {
@@ -26,6 +34,8 @@ function cLog(text) {
 
 var timeDiff = function(unit, range) {
   unit = unit.trim();
+  cLog('Unit is ' + unit);
+  
   var divisor = 1;
   
   switch (unit) {
@@ -46,8 +56,8 @@ var timeDiff = function(unit, range) {
   }
   
   var doc = window.nlp(range);
-  var dates = doc.dates().data()
-  
+  var dates = doc.dates().data();
+    
   var date1 = dates[0].date;
   var d1 = new Date();
   d1.setFullYear(date1.year, date1.month, date1.date);
@@ -58,8 +68,10 @@ var timeDiff = function(unit, range) {
   
   var diff = Math.abs(d2 - d1);
   var res = Number(Math.round((diff / divisor) + 'e2') +'e-2');
+  
   cLog(res + ' ' + unit);
 }
+
 
 if (annyang) {
   var commands = {
@@ -67,7 +79,8 @@ if (annyang) {
   };
 
   annyang.addCommands(commands);
-  annyang.setLanguage('en-GB');
+  annyang.setLanguage('en');
+  annyang.debug();
   
   annyang.addCallback('resultNoMatch', function(phrases) {
     cLog("I don't understand " + phrases[0]);
@@ -77,9 +90,32 @@ if (annyang) {
     uLog(results[0]);
   });
   
+  annyang.addCallback('start', function() {
+    cLog('I\'m listening');
+    annyang.removeCallback('start');
+    annyang.removeCallback('error');
+  });
+    
+  annyang.addCallback('error', function() {
+    cLog('There was an error starting voice recognition');
+    annyang.removeCallback('error');
+  });
+  
+  annyang.addCallback('errorPermissionBlocked', function() {
+    cLog('Voice recognition permission blocked');
+    annyang.removeCallback('errorPermissionBlocked');
+  });
+  
+  annyang.addCallback('errorPermissionDenied', function() {
+    cLog('Voice recognition permission blocked');
+    annyang.removeCallback('errorPermissionDenied');
+  });
+  
   annyang.start();
-  cLog('I\'m listening');
 }  
+else {
+  cLog('I\'m sorry but voice recognition is not available');
+}
 
 </script>  
 </body>
