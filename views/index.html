@@ -1,0 +1,86 @@
+<html>
+<head>
+<script src="//cdnjs.cloudflare.com/ajax/libs/annyang/2.6.0/annyang.min.js"></script>    
+<script src="https://unpkg.com/compromise"></script>
+</head>
+<body>
+<h1>Internet Personal Assistant (IPA)</h1>
+<p>IPA is a bowser based personal assitant experiment using voice interaction and Natural Languange Processing (NLP).</p>
+<h2>Commands</h2>
+<h4>Time difference</h4>
+<p>
+Ask how many seconds, minutes, hours, days or weeks between two dates.<br/>
+Format  "How many {unit} between {date one} and {date two}?"
+</p>
+<script>
+var synth = window.speechSynthesis;
+  
+function uLog(text) {
+  document.body.innerHTML += 'IPA thinks you said: ' + text + '<br/>';
+}
+  
+function cLog(text) {
+  document.body.innerHTML += 'IPA said: ' + text + '<br/>';
+  synth.speak(new SpeechSynthesisUtterance(text));
+} 
+
+var timeDiff = function(unit, range) {
+  unit = unit.trim();
+  var divisor = 1;
+  
+  switch (unit) {
+    case "seconds":
+        divisor = 1000;
+        break;
+    case "minutes":
+        divisor = 60000;
+        break;
+    case "hours":
+        divisor = 3600000;
+        break;
+    case "days":
+        divisor = 24 * 3600000;
+        break;
+    case "weeks":
+        divisor = 7 * 24 * 3600000;
+  }
+  
+  var doc = window.nlp(range);
+  var dates = doc.dates().data()
+  
+  var date1 = dates[0].date;
+  var d1 = new Date();
+  d1.setFullYear(date1.year, date1.month, date1.date);
+  
+  var date2 = dates[1].date;
+  var d2 = new Date();
+  d2.setFullYear(date2.year, date2.month, date2.date);
+  
+  var diff = Math.abs(d2 - d1);
+  var res = Number(Math.round((diff / divisor) + 'e2') +'e-2');
+  cLog(res + ' ' + unit);
+}
+
+if (annyang) {
+  var commands = {
+    'How many :unit between *range': timeDiff
+  };
+
+  annyang.addCommands(commands);
+  annyang.setLanguage('en-GB');
+  
+  annyang.addCallback('resultNoMatch', function(phrases) {
+    cLog("I don't understand " + phrases[0]);
+  });
+  
+  annyang.addCallback('result', function(results) {
+    uLog(results[0]);
+  });
+  
+  annyang.start();
+  cLog('I\'m listening');
+}  
+
+</script>  
+</body>
+</html>
